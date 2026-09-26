@@ -21,7 +21,7 @@ Pixel font, notched frames, CRT scanlines and stepped animations for every page 
 
 [![Download](https://img.shields.io/badge/download-latest_release-e4e4e4?style=for-the-badge&labelColor=0a0a0a)](https://github.com/Trendorin/luci-theme-pixel/releases/latest)
 [![Install](https://img.shields.io/badge/install-3_commands-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#install)
-[![Screenshots](https://img.shields.io/badge/screenshots-11-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#screenshots)
+[![Screenshots](https://img.shields.io/badge/screenshots-12-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#screenshots)
 
 </div>
 
@@ -96,6 +96,15 @@ The theme toggle in the top bar cycles **auto → dark → light**. "Screens" su
 |---|---|---|
 | <img src="screenshots/phone-login.png" alt="Sign-in on a phone"> | <img src="screenshots/phone-status.png" alt="Status on a phone"> | <img src="screenshots/phone-menu.png" alt="Off-canvas menu on a phone"> |
 
+### Your router, your name
+
+Nothing is tied to one device: the hostname and the model come from the router itself. A long name moves to a second
+line after a `-`, `_` or `.`, and bracketed notes are dropped from the model in the sidebar.
+
+| Short name | Long name and model (simulated) |
+|---|---|
+| <img src="screenshots/phone-login.png" width="300" alt="Sign-in for a router called OpenWrt"> | <img src="screenshots/phone-login-long.png" width="300" alt="Sign-in for a router called livingroom-accesspoint_2"> |
+
 ## Features
 
 - **Pixel 5x7 font** with Latin, Cyrillic and UI symbols (%, °, arrows, «», ✓…), built from bitmap glyphs.
@@ -108,6 +117,9 @@ The theme toggle in the top bar cycles **auto → dark → light**. "Screens" su
   walking pixel block. `prefers-reduced-motion` turns it all off.
 - **Every stock LuCI widget restyled:** forms, tabs, tables, drop-downs, dynamic lists, pixel checkboxes and switches,
   segmented progress bars, modal windows, status boxes, zone badges, log pages and realtime graphs.
+- **Any router:** hostname and model are read from the router (`system board`), never built in. Long hostnames wrap onto
+  two lines instead of shrinking or being cut, and every character allowed in an OpenWrt hostname (A–Z, 0–9, `-`, `_`, `.`)
+  has a glyph in the display font.
 - **Sidebar and top bar:** live memory and load in the sidebar, uptime in the top bar (standard `system info` call).
 - **Phone layout** with an off-canvas menu, home-screen icons and a web app manifest.
 - **Self-contained:** fonts and art are served by the router. No external requests, no backend, no extra ACLs.
@@ -146,6 +158,9 @@ scripts of the Makefile; the `.apk` needs apk-tools 3, e.g. `dnf install apk-too
 
 ## Changelog
 
+- **1.0.3** — long hostnames wrap onto two lines on the sign-in screen and in the sidebar instead of shrinking or being
+  cut; `_` has a glyph in the display font (it used to vanish); the sidebar keeps the model number of long model names
+  by dropping bracketed notes first.
 - **1.0.2** — realtime graphs (load, bandwidth, wireless, connections) are drawn on a dark screen with a visible grid
   instead of a white box with near-invisible lines; version-free download links; Russian documentation and new screenshots.
 - **1.0.1** — log pages (System Log, Kernel Log, Travelmate) are a dark scrolling screen instead of a text box as tall

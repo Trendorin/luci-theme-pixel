@@ -42,19 +42,20 @@ return baseclass.extend({
 			return;
 		let boot = false;
 		try { boot = !sessionStorage.getItem('pixel.boot'); sessionStorage.setItem('pixel.boot', '1'); } catch (e) {}
-		let name = (slot.textContent || '').trim().toUpperCase().replace(/[^A-Z0-9 .!-]/g, '') || 'OPENWRT';
-		const room = (slot.parentNode.clientWidth || 236);
-		let u = 2;
-		while (name.length > 1 && (pui.bigWidth(name) + 1) * u > room) {
-			if (u > 1) u = 1;
-			else name = name.slice(0, -1);
-		}
-		slot.replaceChildren(pui.wordmark(name, u, { boot: boot, period: 9 }));
+		const full = (slot.textContent || '').trim();
+		const name = pui.wmName(full) || 'OPENWRT';
+		const room = (slot.parentNode.clientWidth || 280) - 44;
+		slot.replaceChildren(pui.fitWordmark(name, room, { boot: boot, period: 9, max: 2 }));
+		slot.title = full;
 		const sub = document.getElementById('px-brand-sub');
 		if (sub) {
-			let text = sub.textContent.replace(/^\s*>\s*/, '').trim();
-			if (text.length > 16) text = text.replace(/^\S+\s+/, '');
-			if (text.length > 18) text = text.slice(0, 17) + '…';
+			/* "Xiaomi Redmi Router AX6000 (OpenWrt U-Boot layout)" -> "Redmi Router AX6000":
+			   notes in brackets go first, then the vendor if it is still long; two lines at most */
+			const model = sub.textContent.replace(/^\s*>\s*/, '').trim();
+			let text = model.replace(/\s*\([^)]*\)/g, '').trim() || model;
+			if (text.length > 18) text = text.replace(/^\S+\s+/, '');
+			if (text.length > 34) text = text.slice(0, 33) + '…';
+			sub.title = model;
 			sub.replaceChildren(E('b', {}, [ '> ' ]), pui.typed(text, { delay: boot ? 1.2 : 0, instant: !boot }));
 		}
 	},

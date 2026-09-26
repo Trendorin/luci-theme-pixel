@@ -116,6 +116,7 @@ const BIG = {
 	' ': '.....*12',
 	'-': '......*5 ######*2 ......*5',
 	'.': '..*10 ##*2',
+	'_': '..........*10 ##########*2',
 	'!': '##*9 ..*1 ##*2'
 };
 
@@ -180,6 +181,49 @@ return baseclass.extend({
 		s.removeAttribute('height');
 		s.appendChild(S('path', { 'd': runsPath(grid, 1, 0, 0, (c) => c === '#'), 'fill': 'currentColor' }));
 		return s;
+	},
+
+	/* a hostname for the display font: capitals, digits and the - . _ ! glyphs */
+	wmName(text) {
+		return String(text || '').toUpperCase().replace(/[^A-Z0-9 ._!-]/g, '').replace(/\s+/g, ' ').trim();
+	},
+
+	/*
+	 * The biggest wordmark that fits "room" px, at most opts.max px per font pixel:
+	 * one line, or two lines split after a - _ . (or at a space) when that allows
+	 * bigger pixels, the most even split winning. A name too long even at 1 px per
+	 * pixel ends in "..", so it is never cut silently.
+	 */
+	fitWordmark(name, room, opts) {
+		opts = opts || {};
+		const max = opts.max || 2;
+		const w = (t, u) => (this.bigWidth(t) + 1) * u;
+		const fit = (t) => { for (let u = max; u >= 1; u--) if (w(t, u) <= room) return u; return 0; };
+		let best = { lines: [ name ], u: fit(name) };
+		if (best.u < max) {
+			for (let i = 1; i < name.length - 1; i++) {
+				const ch = name[i];
+				if (!/[-_. ]/.test(ch))
+					continue;
+				const a = (ch === ' ' ? name.slice(0, i) : name.slice(0, i + 1)).trim(), b = name.slice(i + 1).trim();
+				if (!a || !b)
+					continue;
+				const u = Math.min(fit(a), fit(b));
+				const even = best.lines.length === 2 && Math.abs(a.length - b.length) < Math.abs(best.lines[0].length - best.lines[1].length);
+				if (u > best.u || (u && u === best.u && even))
+					best = { lines: [ a, b ], u };
+			}
+		}
+		if (!best.u) {
+			let t = name;
+			while (t.length > 1 && w(t + '..', 1) > room)
+				t = t.slice(0, -1);
+			best = { lines: [ t + '..' ], u: 1 };
+		}
+		const box = E('span', { 'class': 'px-wm-lines' + (best.lines.length > 1 ? ' two' : ''), 'role': 'img', 'aria-label': name });
+		best.lines.forEach((line, i) => box.appendChild(this.wordmark(line, best.u,
+			Object.assign({}, opts, { delay: (opts.delay || 0.1) + i * 0.3, period: opts.period }))));
+		return box;
 	},
 
 	bigWidth(text, gap) {

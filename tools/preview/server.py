@@ -21,6 +21,7 @@ NEW = REPO + '/htdocs'
 OLD = LUCI + '/www'
 SSH = ['ssh', '-o', 'ControlMaster=auto', '-o', 'ControlPath=/tmp/pixel-preview-%C', '-o', 'ControlPersist=900', os.environ.get('ROUTER', 'openwrt')]
 SANITIZE = os.environ.get('SANITIZE') == '1'
+SANFILE = os.environ.get('SANITIZE_FILE', S + '/sanitize.local.json')  # e.g. another board for layout tests
 ENV = dict(os.environ)
 lock = threading.Lock()
 
@@ -58,7 +59,7 @@ PUBLIC_IP = re.compile(r'\b(?!(?:10|127|0)\.)(?!192\.168\.)(?!172\.(?:1[6-9]|2\d
 # as {"regex": "replacement", ...}, which is kept out of git
 SUBS = [
     (re.compile(r'(?<![0-9A-Fa-f:])[0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){5}(?![0-9A-Fa-f:])'), fake_mac),
-] + [(re.compile(k), v) for k, v in (json.load(open(S + '/sanitize.local.json')) if os.path.exists(S + '/sanitize.local.json') else {}).items()] + [
+] + [(re.compile(k), v) for k, v in (json.load(open(SANFILE)) if os.path.exists(SANFILE) else {}).items()] + [
     (PUBLIC_IP, '203.0.113.7'),
 ]
 SECRET = re.compile(r'key|psk|pass|secret|private|token', re.I)

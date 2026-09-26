@@ -50,15 +50,11 @@
 	/* the hostname decodes out of pixel noise, the subtitle types itself */
 	L.require('pixel.ui').then(function(pui) {
 		var wm = document.getElementById('px-login-wm'), sub = document.getElementById('px-login-sub');
-		var name = (wm.getAttribute('data-host') || '').toUpperCase().replace(/[^A-Z0-9 .!-]/g, '') || 'OPENWRT';
-		var room = Math.min(wm.clientWidth || 520, 560), u = 6;
-		while (u > 1 && (pui.bigWidth(name) + 1) * u > room)
-			u--;
-		while (name.length > 1 && (pui.bigWidth(name) + 1) * u > room)
-			name = name.slice(0, -1);
-		wm.replaceChildren(pui.wordmark(name, u, { boot: true, delay: 0.3 }));
+		var name = pui.wmName(wm.getAttribute('data-host')) || 'OPENWRT';
+		var room = Math.min(wm.clientWidth || 520, 560);
+		wm.replaceChildren(pui.fitWordmark(name, room, { boot: true, delay: 0.3, max: 6 }));
 		var text = sub.textContent.replace(/^\s*>\s*/, '').trim();
-		sub.replaceChildren(E('b', {}, [ '> ' ]), pui.typed(text, { delay: 0.35 + name.length * 0.1 + 0.6 }));
+		sub.replaceChildren(E('b', {}, [ '> ' ]), pui.typed(text, { delay: 0.35 + Math.min(name.length, 14) * 0.1 + 0.6 }));
 		document.getElementById('px-login-screen').classList.add('ready');
 	});
 </script>

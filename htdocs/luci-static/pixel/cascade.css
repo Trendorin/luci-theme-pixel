@@ -286,7 +286,9 @@ table { border-collapse: collapse; border-spacing: 0; }
 .px-brand { display: block; padding: 24px 22px 18px; color: var(--fg); }
 .px-brand:hover { color: var(--fg); }
 .px-brand .px-wm { display: block; max-width: 100%; height: auto; }
-.px-brand-sub { display: block; margin-top: 12px; color: var(--fg-3); white-space: nowrap; overflow: hidden; }
+.px-wm-lines { display: flex; flex-direction: column; align-items: inherit; gap: 6px; max-width: 100%; }
+.px-login-wm .px-wm-lines { align-items: center; gap: 10px; }
+.px-brand-sub { display: -webkit-box; margin-top: 12px; color: var(--fg-3); overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
 .px-brand-sub b { color: var(--fg); }
 
 .px-nav { flex: 1 1 auto; overflow-y: auto; padding: 4px 14px 16px; scrollbar-width: thin; }
@@ -1407,7 +1409,7 @@ body.px-blank { display: grid; min-height: 100vh; place-items: center; padding: 
 /* nav groups are buttons: keep them out of the generic button look */
 .px-nav button { height: auto; justify-content: flex-start; box-shadow: none; text-transform: none; }
 .px-nav button:active, .px-nav a:active { transform: none; }
-.px-brand-sub { text-overflow: clip; }
+.px-brand-sub { text-overflow: ellipsis; }
 
 /* status overview blocks: "SYSTEM ········ HIDE" */
 .cbi-title { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; }
