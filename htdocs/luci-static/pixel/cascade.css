@@ -495,6 +495,10 @@ table { border-collapse: collapse; border-spacing: 0; }
 .cbi-tab-descr { margin: -8px 0 20px; color: var(--fg-3); }
 [data-tab-title] { height: 0; opacity: 0; overflow: hidden; }
 [data-tab-active="true"] { height: auto; opacity: 1; overflow: visible; animation: px-in .2s steps(3, end); }
+/* a hidden tab keeps no padding, margin or frame: a collapsed .cbi-section still took
+   ~70px, a blank gap above the graph after switching tabs on Realtime Graphs */
+[data-tab-title]:not([data-tab-active="true"]) { padding: 0 !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; }
+[data-tab-title]:not([data-tab-active="true"])::before { display: none; }
 .tab-content > .tab-pane, .tab-content > div { display: none; }
 .tab-content > .active { display: block; }
 
@@ -1241,10 +1245,19 @@ body.modal-overlay-active .modal { animation: px-in .2s steps(4, end); }
 .cbi-filebrowser .upload > div { flex: 10; min-width: 150px; }
 .cbi-filebrowser .upload > div > input { width: 100%; }
 
-/* realtime graphs and other svg views */
+/* realtime graphs and other svg views. Stock LuCI puts each graph in a div styled
+   "background:#fff" and draws the grid black at 0.1px, so it was a white box with
+   invisible lines in dark mode; now it is a dark screen in both themes, like the logs. */
+#view div[style*="height:300px"][style*="background:#fff"] {
+	background: var(--s-bg) !important;
+	border: 0 !important;
+	box-shadow: inset 0 0 0 2px var(--s-frame);
+	clip-path: var(--notch);
+	overflow: hidden;
+}
 #view div[style] > svg { background-color: transparent !important; }
-#view div[style] > svg line[style] { stroke: var(--frame-2) !important; }
-#view div[style] > svg text { fill: var(--fg-3) !important; font-family: var(--px); font-size: 20px; }
+#view div[style] > svg line[style] { stroke: var(--s-rule) !important; stroke-width: 2px !important; shape-rendering: crispEdges; }
+#view div[style] > svg text { fill: var(--s-sub) !important; font-family: var(--px) !important; font-size: 20px !important; text-shadow: none !important; }
 #view [style*="border:1px solid #000"], #view [style*="border: 1px solid #000"] { border: 0 !important; box-shadow: inset 0 0 0 2px var(--frame-2); }
 
 #applyreboot-section { line-height: 300%; }

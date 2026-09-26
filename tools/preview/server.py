@@ -8,7 +8,8 @@ the router.
 
 LUCI must contain www/ (and usr/share/ucode/luci/template/) copied from a router.
 SANITIZE=1 replaces MACs, IPs, SSIDs, host names and secrets in everything shown,
-for public screenshots. Serves http://127.0.0.1:8088/.
+for public screenshots. DEMO=1 also swaps the system and kernel logs for invented
+lines (a real log is full of addresses and key fingerprints). Serves http://127.0.0.1:8088/.
 """
 import json, os, re, shlex, subprocess, sys, time, threading
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -67,7 +68,8 @@ def clean(v, key=''):
     if not SANITIZE:
         return v
     if isinstance(v, dict):
-        return {k: clean(x, k) for k, x in v.items()}
+        # keys too: devices, stations and leases often come keyed by name or MAC
+        return {subs(k) if isinstance(k, str) else k: clean(x, k) for k, x in v.items()}
     if isinstance(v, list):
         return [clean(x, key) for x in v]
     if isinstance(v, str):
@@ -75,8 +77,13 @@ def clean(v, key=''):
             return '********'
         if key == 'hostname' and v == 'root':
             return 'laptop'
-        for rx, rep in SUBS:
-            v = rx.sub(rep, v)
+        v = subs(v)
+    return v
+
+
+def subs(v):
+    for rx, rep in SUBS:
+        v = rx.sub(rep, v)
     return v
 
 
@@ -118,6 +125,64 @@ def node_for(parts):
 RO = re.compile(r'^(get|list|dump|status|info|board|assoclist|freqlist|txpowerlist|countrylist|htmodelist|devices|state|configs|changes|glance|read|stat|md5|validate)', re.I)
 RW = re.compile(r'(scan|set|add|del|apply|commit|reload|restart|start|stop|^up$|^down$|exec|write|remove|init|switch|kick|block|forget|update|password|rename|order|revert|confirm|rollback|destroy|login)', re.I)
 EXEC_OK = {'/sbin/logread', '/bin/dmesg', '/usr/sbin/nft', '/sbin/ip', '/usr/sbin/ip', '/bin/cat', '/usr/libexec/luci-peeraddr'}
+DEMO = os.environ.get('DEMO') == '1'
+
+# invented log lines for DEMO=1: (seconds before now, syslog priority, message)
+DEMO_SYSLOG = [
+    (3620, 29, "procd: - init complete -"),
+    (3618, 29, "netifd: Interface 'lan' is now up"),
+    (3617, 30, "dnsmasq[1402]: started, version 2.90 cachesize 1000"),
+    (3617, 30, "dnsmasq-dhcp[1402]: DHCP, IP range 192.168.1.100 -- 192.168.1.249, lease time 12h"),
+    (3615, 29, "hostapd: phy0-ap0: interface state UNINITIALIZED->ENABLED"),
+    (3615, 29, "hostapd: phy0-ap0: AP-ENABLED"),
+    (3612, 29, "hostapd: phy1-ap0: AP-ENABLED"),
+    (3604, 6, "[   24.114018] mtk_soc_eth 15100000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx"),
+    (3602, 29, "netifd: wan (2210): udhcpc: lease of 203.0.113.24 obtained from 203.0.113.1, lease time 86400"),
+    (3601, 29, "netifd: Interface 'wan' is now up"),
+    (3600, 13, "firewall: Reloading firewall due to ifup of wan (eth0)"),
+    (3540, 29, "hostapd: phy1-ap0: AP-STA-CONNECTED 02:00:5e:21:25:5b auth_alg=sae"),
+    (3539, 30, "dnsmasq-dhcp[1402]: DHCPACK(br-lan) 192.168.1.142 02:00:5e:21:25:5b phone"),
+    (3310, 29, "hostapd: phy1-ap0: AP-STA-CONNECTED 02:00:5e:23:7e:91 auth_alg=sae"),
+    (3309, 30, "dnsmasq-dhcp[1402]: DHCPACK(br-lan) 192.168.1.118 02:00:5e:23:7e:91 laptop"),
+    (2950, 29, "hostapd: phy0-ap1: AP-STA-CONNECTED 02:00:5e:22:4a:b6 auth_alg=open"),
+    (2949, 30, "dnsmasq-dhcp[1402]: DHCPACK(br-guest) 192.168.2.117 02:00:5e:22:4a:b6 tv"),
+    (2400, 86, "dropbear[3021]: Child connection from 192.168.1.118:51234"),
+    (2400, 85, "dropbear[3021]: Pubkey auth succeeded for 'root' with ssh-ed25519 key SHA256:ZGVtby1vbmx5LW5vdC1hLXJlYWwta2V5 from 192.168.1.118:51234"),
+    (2210, 86, "dropbear[3021]: Exit (root) from <192.168.1.118:51234>: Disconnect received"),
+    (1800, 84, "dispatcher.uc: luci: failed login on /admin/status/overview for root from 192.168.1.142"),
+    (1790, 86, "dispatcher.uc: luci: accepted login on /admin/status/overview for root from 192.168.1.142"),
+    (1500, 28, "dnsmasq[1402]: possible DNS-rebind attack detected: rebind.example.test"),
+    (1200, 29, "hostapd: phy1-ap0: AP-STA-DISCONNECTED 02:00:5e:23:7e:91"),
+    (900, 30, "dnsmasq-dhcp[1402]: DHCPREQUEST(br-lan) 192.168.1.142 02:00:5e:21:25:5b"),
+    (900, 30, "dnsmasq-dhcp[1402]: DHCPACK(br-lan) 192.168.1.142 02:00:5e:21:25:5b phone"),
+    (610, 29, "netifd: wan (2210): udhcpc: sending renew to server 203.0.113.1"),
+    (609, 29, "netifd: wan (2210): udhcpc: lease of 203.0.113.24 obtained from 203.0.113.1, lease time 86400"),
+    (300, 29, "hostapd: phy1-ap0: AP-STA-CONNECTED 02:00:5e:23:7e:91 auth_alg=sae"),
+    (299, 30, "dnsmasq-dhcp[1402]: DHCPACK(br-lan) 192.168.1.118 02:00:5e:23:7e:91 laptop"),
+    (40, 86, "dispatcher.uc: luci: accepted login on /admin/status/logs for root from 192.168.1.118"),
+]
+DEMO_DMESG = '\n'.join([
+    '[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd034]',
+    '[    0.000000] Machine model: Cudy TR3000 256MB v1',
+    '[    0.000000] Linux version 6.12.94 (builder@buildhost) (aarch64-openwrt-linux-musl-gcc (OpenWrt GCC 14.3.0)) #0 SMP',
+    '[    0.412871] Memory: 489612K/524288K available',
+    '[    1.901225] spi-nand spi0.0: Winbond SPI NAND was found.',
+    '[    2.311540] ubi0: attached mtd5 (name "ubi", size 240 MiB)',
+    '[    4.106813] VFS: Mounted root (squashfs filesystem) readonly on device 31:0.',
+    '[    9.824103] mt798x-wmac 18000000.wifi: HW/SW Version: 0x8a108a10, Build Time: 20240823160845a',
+    '[   10.512931] mtk_soc_eth 15100000.ethernet eth0: PHY [mdio-bus:01] driver [MediaTek MT7981 PHY]',
+    '[   18.994321] br-lan: port 1(eth1) entered forwarding state',
+    '[   24.114018] mtk_soc_eth 15100000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx',
+    '[   25.201774] br-lan: port 2(phy0-ap0) entered forwarding state',
+    '[   25.990417] br-lan: port 3(phy1-ap0) entered forwarding state',
+])
+
+
+def demo_log(lines):
+    now = int(time.time() * 1000)
+    out = [{'msg': m, 'id': 1000 + i, 'priority': p, 'source': 0 if p < 8 else 1, 'time': now - ago * 1000}
+           for i, (ago, p, m) in enumerate(DEMO_SYSLOG)]
+    return out[-lines:] if lines else out
 
 
 def ubus(calls):
@@ -127,6 +192,10 @@ def ubus(calls):
         args = args or {}
         if obj == 'session':
             out[i] = [0, {'access': True}] if method == 'access' else [0, {}]
+        elif DEMO and obj == 'log' and method == 'read':
+            out[i] = [0, {'log': demo_log(int(args.get('lines') or 0))}]
+        elif DEMO and obj == 'file' and method == 'exec' and args.get('command') == '/bin/dmesg':
+            out[i] = [0, {'code': 0, 'stdout': DEMO_DMESG + '\n'}]
         elif obj == 'file' and method == 'exec':
             cmd = args.get('command', '')
             if cmd in EXEC_OK:
