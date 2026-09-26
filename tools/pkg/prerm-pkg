@@ -1,0 +1,9 @@
+#!/bin/sh
+[ -n "${IPKG_INSTROOT}" ] && exit 0
+uci -q delete luci.themes.Pixel
+if [ "$(uci -q get luci.main.mediaurlbase)" = "/luci-static/pixel" ]; then
+	uci set luci.main.mediaurlbase=/luci-static/bootstrap
+fi
+uci commit luci
+rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache
+exit 0

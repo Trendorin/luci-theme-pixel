@@ -48,16 +48,16 @@ copy it to the router and install it. The package is architecture independent (`
 
 ```sh
 cd /tmp
-wget https://github.com/Trendorin/luci-theme-pixel/releases/download/v1.0.0/luci-theme-pixel-1.0.0-r1.apk
-apk add --allow-untrusted luci-theme-pixel-1.0.0-r1.apk
+wget https://github.com/Trendorin/luci-theme-pixel/releases/download/v1.0.1/luci-theme-pixel-1.0.1-r1.apk
+apk add --allow-untrusted luci-theme-pixel-1.0.1-r1.apk
 ```
 
 **OpenWrt 23.05 and 24.10 (opkg)**
 
 ```sh
 cd /tmp
-wget https://github.com/Trendorin/luci-theme-pixel/releases/download/v1.0.0/luci-theme-pixel_1.0.0-r1_all.ipk
-opkg install luci-theme-pixel_1.0.0-r1_all.ipk
+wget https://github.com/Trendorin/luci-theme-pixel/releases/download/v1.0.1/luci-theme-pixel_1.0.1-r1_all.ipk
+opkg install luci-theme-pixel_1.0.1-r1_all.ipk
 ```
 
 Installing the package makes Pixel the active theme. To switch back and forth, use
@@ -78,6 +78,9 @@ cd <sdk> && make defconfig && make package/luci-theme-pixel/compile
 # -> bin/packages/<arch>/base/luci-theme-pixel-*.apk (25.12+) or luci-theme-pixel_*_all.ipk (24.10, 23.05)
 ```
 
+Without the SDK, `tools/build_pkg.py [OUTDIR]` builds the same `.apk` and `.ipk` (layout, metadata and install
+scripts as the Makefile; the `.apk` needs apk-tools 3, e.g. `dnf install apk-tools`).
+
 Sources of the art are in `tools/`:
 
 | File | What |
@@ -87,6 +90,12 @@ Sources of the art are in `tools/`:
 | `build_font.py` | builds `fonts/pixel-5x7.woff2` (needs `fonttools` and `brotli`) |
 | `build_art.py` | favicon, home-screen icons and the web app manifest (standard library only) |
 | `preview/` | a local preview: theme files from this repository, stock LuCI views and read-only ubus calls proxied to a real router over SSH; `SANITIZE=1` replaces MACs, IPs, SSIDs and host names for screenshots |
+
+## Changes
+
+- **1.0.1** — log pages (System Log, Kernel Log, Travelmate) are a scrolling screen instead of a text box as tall
+  as the whole log; the striped title bar of modal windows now reaches the right edge.
+- **1.0.0** — first release.
 
 ## Compatibility
 

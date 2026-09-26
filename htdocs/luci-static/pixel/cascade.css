@@ -1028,6 +1028,7 @@ body.modal-overlay-active .modal { animation: px-in .2s steps(4, end); }
 	display: flex;
 	align-items: center;
 	gap: 14px;
+	max-width: none;	/* the bar reaches both edges; ".modal > *" would stop it 52px short */
 	margin: 0 -26px 20px;
 	padding: 12px 16px;
 	box-shadow: inset 0 -2px 0 var(--f);
@@ -1135,14 +1136,23 @@ body.modal-overlay-active .modal { animation: px-in .2s steps(4, end); }
 .fade-in { animation: px-in .16s steps(3, end); }
 .fade-out { animation: px-in .16s steps(3, end) reverse; }
 
-#syslog, textarea#syslog {
+/* log pages (System Log, Kernel Log, Travelmate): a scrolling dark screen. Stock
+   LuCI gives the textarea one row per log line, which made the page as tall as the log. */
+#syslog, textarea#syslog, textarea#logfile {
+	display: block;
 	width: 100%;
-	min-height: 62vh;
-	background: var(--field);
-	color: var(--fg);
-	font: 13px/1.65 var(--mono);
-	box-shadow: inset 0 0 0 2px var(--frame);
-	padding: 14px;
+	height: 68vh !important;
+	min-height: 320px !important;
+	max-height: none !important;
+	margin: 0 0 12px;
+	padding: 14px 16px !important;
+	resize: vertical;
+	background: var(--s-bg) !important;
+	color: var(--s-value) !important;
+	box-shadow: inset 0 0 0 2px var(--s-frame) !important;
+	clip-path: var(--notch);
+	font: 13px/1.65 var(--mono) !important;
+	scrollbar-color: #3a3a3a transparent;
 }
 
 /* interface & zone badges */
