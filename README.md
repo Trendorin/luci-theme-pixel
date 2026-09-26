@@ -53,7 +53,7 @@ Versioned files and checksums (`SHA256SUMS`) are on the [releases page](https://
 
 - **Switch themes:** System → System → Language and Style → Design. From the shell:
   `uci set luci.main.mediaurlbase=/luci-static/bootstrap && uci commit luci`.
-- **Upgrade:** run the same two commands again. The active theme stays as it is.
+- **Upgrade:** run the same commands again. The active theme stays as it is.
 - **Remove:** `apk del luci-theme-pixel` or `opkg remove luci-theme-pixel`. If Pixel was active, LuCI falls back to Bootstrap.
 - **Old parts of the page still show?** Reload once with <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>.
 - **Phone icon:** open LuCI in Chrome or Samsung Internet → menu → **Add to Home screen**.
