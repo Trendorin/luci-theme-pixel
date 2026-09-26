@@ -20,7 +20,7 @@ Pixel font, notched frames, CRT scanlines and stepped animations for every page 
 <img src="screenshots/login.gif" width="600" alt="Sign-in screen: the hostname decodes out of pixel noise, a glint sweeps across it and the subtitle types itself">
 
 [![Download](https://img.shields.io/badge/download-latest_release-e4e4e4?style=for-the-badge&labelColor=0a0a0a)](https://github.com/Trendorin/luci-theme-pixel/releases/latest)
-[![Install](https://img.shields.io/badge/install-2_commands-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#install)
+[![Install](https://img.shields.io/badge/install-3_commands-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#install)
 [![Screenshots](https://img.shields.io/badge/screenshots-11-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#screenshots)
 
 </div>

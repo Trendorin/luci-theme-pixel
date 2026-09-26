@@ -20,7 +20,7 @@
 <img src="screenshots/login.gif" width="600" alt="Экран входа: имя роутера проявляется из пиксельного шума, по нему пробегает блик, подзаголовок печатается сам">
 
 [![Скачать](https://img.shields.io/badge/%D1%81%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C-%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B9_%D1%80%D0%B5%D0%BB%D0%B8%D0%B7-e4e4e4?style=for-the-badge&labelColor=0a0a0a)](https://github.com/Trendorin/luci-theme-pixel/releases/latest)
-[![Установка](https://img.shields.io/badge/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-2_%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#установка)
+[![Установка](https://img.shields.io/badge/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-3_%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#установка)
 [![Скриншоты](https://img.shields.io/badge/%D1%81%D0%BA%D1%80%D0%B8%D0%BD%D1%88%D0%BE%D1%82%D1%8B-11-0a0a0a?style=for-the-badge&labelColor=0a0a0a)](#скриншоты)
 
 </div>
@@ -53,7 +53,7 @@ opkg install luci-theme-pixel_all.ipk
 
 - **Переключить тему:** System → System → Language and Style → Design. Из консоли:
   `uci set luci.main.mediaurlbase=/luci-static/bootstrap && uci commit luci`.
-- **Обновить:** выполнить те же две команды ещё раз. Выбранная тема не меняется.
+- **Обновить:** выполнить те же команды ещё раз. Выбранная тема не меняется.
 - **Удалить:** `apk del luci-theme-pixel` или `opkg remove luci-theme-pixel`. Если Pixel была активной, LuCI вернётся к Bootstrap.
 - **Видны куски старой темы?** Обновите страницу один раз с <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>.
 - **Иконка на телефоне:** откройте LuCI в Chrome или Samsung Internet → меню → **Добавить на главный экран**.
