@@ -1,0 +1,5 @@
+tools/preview/indexcache.json
+*.ttf
+__pycache__/
+*.pyc
+tools/preview/sanitize.local.json

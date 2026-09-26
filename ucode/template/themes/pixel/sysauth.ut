@@ -1,0 +1,66 @@
+{#
+ luci-theme-pixel: sign-in page. Licensed under the Apache License 2.0.
+-#}
+
+{%
+	const board = ubus.call('system', 'board');
+	const release = board?.release ?? {};
+	const host = striptags(board?.hostname ?? 'OpenWrt');
+	const model = striptags(board?.model ?? '');
+-%}
+
+{% include('header', { blank_page: true }) %}
+
+<main class="px-login">
+	<div class="px-screen px-login-screen" id="px-login-screen">
+		<i class="px-tw" aria-hidden="true"></i><i class="px-rf" aria-hidden="true"></i><i class="px-scan" aria-hidden="true"></i>
+		<div class="px-login-wm" id="px-login-wm" data-host="{{ entityencode(host, true) }}">{{ host }}</div>
+		<div class="px-login-rule" aria-hidden="true"></div>
+		<div class="px-login-sub" id="px-login-sub"><b>&gt;</b> {{ striptags(release.distribution ?? 'OpenWrt') }} {{ striptags(release.version ?? '') }}{% if (model): %} · {{ model }}{% endif %}</div>
+	</div>
+
+	<form class="px-login-form px-frame" method="post" autocomplete="on">
+		<div class="px-login-title"><span>{{ host }}</span><i></i><em>sign in</em></div>
+
+		{% if (fuser): %}
+		<div class="alert-message error">{{ _('Invalid username and/or password! Please try again.') }}</div>
+		{% endif %}
+
+		<label class="px-login-row" for="luci_username">
+			<span>login:</span>
+			<input name="luci_username" id="luci_username" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" value="{{ entityencode(duser ?? 'root', true) }}">
+		</label>
+		<label class="px-login-row" for="luci_password">
+			<span>password:</span>
+			<input name="luci_password" id="luci_password" type="password" autocomplete="current-password" autofocus>
+		</label>
+		<button class="btn primary" type="submit">{{ _('Log in') }}</button>
+	</form>
+
+	<div class="px-label px-eof"><span>EOF</span></div>
+</main>
+
+<script>
+	document.querySelector('.px-login form').addEventListener('submit', function() {
+		var btn = this.querySelector('button');
+		btn.classList.add('spinning');
+		btn.disabled = true;
+	});
+
+	/* the hostname decodes out of pixel noise, the subtitle types itself */
+	L.require('pixel.ui').then(function(pui) {
+		var wm = document.getElementById('px-login-wm'), sub = document.getElementById('px-login-sub');
+		var name = (wm.getAttribute('data-host') || '').toUpperCase().replace(/[^A-Z0-9 .!-]/g, '') || 'OPENWRT';
+		var room = Math.min(wm.clientWidth || 520, 560), u = 6;
+		while (u > 1 && (pui.bigWidth(name) + 1) * u > room)
+			u--;
+		while (name.length > 1 && (pui.bigWidth(name) + 1) * u > room)
+			name = name.slice(0, -1);
+		wm.replaceChildren(pui.wordmark(name, u, { boot: true, delay: 0.3 }));
+		var text = sub.textContent.replace(/^\s*>\s*/, '').trim();
+		sub.replaceChildren(E('b', {}, [ '> ' ]), pui.typed(text, { delay: 0.35 + name.length * 0.1 + 0.6 }));
+		document.getElementById('px-login-screen').classList.add('ready');
+	});
+</script>
+
+{% include('footer', { blank_page: true }) %}

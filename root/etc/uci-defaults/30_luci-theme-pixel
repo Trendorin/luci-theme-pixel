@@ -1,0 +1,11 @@
+#!/bin/sh
+# Register the theme and make it the default on first install (not on upgrades).
+if [ "$PKG_UPGRADE" != 1 ]; then
+	uci get luci.themes.Pixel >/dev/null 2>&1 || \
+	uci batch <<-EOF2
+		set luci.themes.Pixel=/luci-static/pixel
+		set luci.main.mediaurlbase=/luci-static/pixel
+		commit luci
+	EOF2
+fi
+exit 0

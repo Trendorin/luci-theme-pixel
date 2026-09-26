@@ -1,0 +1,115 @@
+{#
+ luci-theme-pixel: header. Licensed under the Apache License 2.0.
+-#}
+
+{%
+	import { getuid, getspnam } from 'luci.core';
+
+	const boardinfo = ubus.call('system', 'board');
+	const hostname = striptags(boardinfo?.hostname ?? '?');
+
+	http.prepare_content('text/html; charset=UTF-8');
+-%}
+
+<!DOCTYPE html>
+<html lang="{{ dispatcher.lang }}" data-theme="dark" data-darkmode="true">
+	<head>
+		<meta charset="utf-8">
+		<title>{{ striptags(`${dispatched?.title ? `${_(dispatched.title)} · ` : ''}${hostname}`) }}</title>
+		<script>
+			(function() {
+				var root = document.documentElement, pref = 'auto', mq = window.matchMedia('(prefers-color-scheme: dark)');
+				try { pref = localStorage.getItem('pixel.theme') || 'auto'; } catch (e) {}
+				function apply() {
+					var dark = pref === 'auto' ? mq.matches : pref === 'dark';
+					root.setAttribute('data-theme', dark ? 'dark' : 'light');
+					root.setAttribute('data-darkmode', dark ? 'true' : 'false');
+				}
+				window.pixelTheme = function(p) {
+					if (p) { pref = p; try { localStorage.setItem('pixel.theme', p); } catch (e) {} apply(); }
+					return pref;
+				};
+				mq.addEventListener('change', apply);
+				apply();
+			})();
+		</script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+		<meta name="color-scheme" content="dark light">
+		<meta name="darkreader-lock">
+		<meta name="referrer" content="no-referrer">
+		<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+		<meta name="theme-color" content="#e4e4e4" media="(prefers-color-scheme: light)">
+		<meta name="application-name" content="{{ hostname }}">
+		<meta name="apple-mobile-web-app-title" content="{{ hostname }}">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="manifest" href="{{ media }}/app.webmanifest">
+		<link rel="preload" href="{{ media }}/fonts/pixel-5x7.woff2" as="font" type="font/woff2" crossorigin>
+		<link rel="stylesheet" href="{{ media }}/cascade.css?v=1.0.0">
+		<link rel="icon" href="{{ media }}/logo.svg" type="image/svg+xml" sizes="any">
+		<link rel="icon" href="{{ media }}/icon-192.png" type="image/png" sizes="192x192">
+		<link rel="apple-touch-icon" href="{{ media }}/icon-180.png">
+		{% if (node?.css): %}
+		<link rel="stylesheet" href="{{ resource }}/{{ node.css }}">
+		{% endif %}
+		{% if (css): %}
+		<style title="text/css">{{ css }}</style>
+		{% endif %}
+		<script src="{{ dispatcher.build_url('admin/translations', dispatcher.lang) }}"></script>
+		<script src="{{ resource }}/cbi.js"></script>
+	</head>
+
+	<body class="lang_{{ dispatcher.lang }} {{ entityencode(striptags(node?.title ?? ''), true) }}{{ blank_page ? ' px-blank' : '' }}" data-page="{{ entityencode(join('-', ctx.request_path), true) }}">
+		{% if (!blank_page): %}
+		<div class="px-app">
+			<aside class="px-side" id="px-side">
+				<a class="px-brand" href="{{ dispatcher.build_url() }}" aria-label="{{ hostname }}">
+					<span class="px-wm-slot" id="px-wm">{{ hostname }}</span>
+					<span class="px-brand-sub" id="px-brand-sub"><b>&gt;</b> {{ striptags(boardinfo?.model ?? '') }}</span>
+				</a>
+				<nav class="px-nav" id="px-nav" aria-label="Main menu"></nav>
+				<div class="px-side-foot" id="px-side-foot"></div>
+			</aside>
+			<div class="px-scrim" id="px-scrim"></div>
+			<div class="px-main">
+				<header class="px-top">
+					<button class="px-icon-btn px-burger" id="px-burger" type="button" aria-label="Open menu"><svg class="px-ico" viewBox="0 0 9 9" aria-hidden="true"><path fill="currentColor" d="M0 1h9v1h-9zM0 4h9v1h-9zM0 7h9v1h-9z"/></svg></button>
+					<div class="px-crumbs" id="px-crumbs"></div>
+					<div class="px-glance" id="px-glance"></div>
+					<div id="indicators"></div>
+					<button class="px-icon-btn" id="px-theme" type="button" aria-label="Color theme"></button>
+					<a class="px-icon-btn" id="px-logout" href="{{ dispatcher.build_url('admin/logout') }}" title="Log out" aria-label="Log out"><svg class="px-ico" viewBox="0 0 9 9" aria-hidden="true"><path fill="currentColor" d="M0 0h4v1h-4zM0 1h1v1h-1zM0 2h1v1h-1zM6 2h1v1h-1zM0 3h1v1h-1zM7 3h1v1h-1zM0 4h1v1h-1zM3 4h6v1h-6zM0 5h1v1h-1zM7 5h1v1h-1zM0 6h1v1h-1zM6 6h1v1h-1zM0 7h1v1h-1zM0 8h4v1h-4z"/></svg></a>
+				</header>
+				<ul id="modemenu" style="display:none"></ul>
+
+				<div id="maincontent" class="container">
+					{% if (getuid() == 0 && getspnam('root')?.pwdp === ''): %}
+					<div class="alert-message warning">
+						<h4>{{ _('No password set!') }}</h4>
+						<p>{{ _('There is no password set on this router. Please configure a root password to protect the web interface.') }}</p>
+						{% if (dispatcher.lookup("admin/system/admin")): %}
+						<div class="right"><a class="btn" href="{{ dispatcher.build_url("admin/system/admin") }}">{{ _('Go to password configuration...') }}</a></div>
+						{% endif %}
+					</div>
+					{% endif %}
+
+					{% if (boardinfo?.rootfs_type == "initramfs"): %}
+					<div class="alert-message warning">
+						<h4>{{ _('System running in recovery (initramfs) mode.') }}</h4>
+						<p>{{ _('No changes to settings will be stored and are lost after rebooting. This mode should only be used to install a firmware upgrade') }}</p>
+						{% if (dispatcher.lookup("admin/system/flash")): %}
+						<div class="right"><a class="btn" href="{{ dispatcher.build_url("admin/system/flash") }}">{{ _('Go to firmware upgrade...') }}</a></div>
+						{% endif %}
+					</div>
+					{% endif %}
+
+					<noscript>
+						<div class="alert-message warning">
+							<h4>{{ _('JavaScript required!') }}</h4>
+							<p>{{ _('You must enable JavaScript in your browser or LuCI will not work properly.') }}</p>
+						</div>
+					</noscript>
+
+					<div id="tabmenu" style="display:none"></div>
+		{% endif %}
