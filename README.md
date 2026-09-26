@@ -32,14 +32,16 @@ The package is architecture independent. Run on the router (SSH):
 **OpenWrt 25.12 and newer** (apk)
 
 ```sh
-cd /tmp && wget https://github.com/Trendorin/luci-theme-pixel/releases/latest/download/luci-theme-pixel.apk
+cd /tmp
+wget https://github.com/Trendorin/luci-theme-pixel/releases/latest/download/luci-theme-pixel.apk
 apk add --allow-untrusted luci-theme-pixel.apk
 ```
 
 **OpenWrt 23.05 and 24.10** (opkg)
 
 ```sh
-cd /tmp && wget https://github.com/Trendorin/luci-theme-pixel/releases/latest/download/luci-theme-pixel_all.ipk
+cd /tmp
+wget https://github.com/Trendorin/luci-theme-pixel/releases/latest/download/luci-theme-pixel_all.ipk
 opkg install luci-theme-pixel_all.ipk
 ```
 
