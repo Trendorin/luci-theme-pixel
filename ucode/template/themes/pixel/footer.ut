@@ -1,0 +1,21 @@
+{#
+ luci-theme-pixel: footer. Licensed under the Apache License 2.0.
+-#}
+
+		{% if (!blank_page): %}
+				</div>
+				<footer class="px-foot">
+					<div class="px-label px-eof"><span>EOF</span></div>
+					<span>
+						<a href="{{ entityencode(version.disturl ?? '#', true) }}" target="_blank" rel="noreferrer noopener">{{ version.distname }} {{ version.distversion }}</a>
+						· {{ version.luciname }} {{ version.luciversion }}
+						{% if (lua_active): %} · {{ _('Lua compatibility mode active') }}{% endif %}
+						· <a href="https://github.com/Trendorin/luci-theme-pixel" target="_blank" rel="noreferrer noopener">luci-theme-pixel</a>
+					</span>
+				</footer>
+			</div>
+		</div>
+		<script>L.require('menu-pixel')</script>
+		{% endif %}
+	</body>
+</html>
