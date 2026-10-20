@@ -149,13 +149,6 @@ scripts of the Makefile; the `.apk` needs apk-tools 3, e.g. `dnf install apk-too
 
 ## Changelog
 
-- **1.0.3** — long hostnames wrap onto two lines on the sign-in screen and in the sidebar instead of shrinking or being
-  cut; `_` has a glyph in the display font (it used to vanish); the sidebar keeps the model number of long model names
-  by dropping bracketed notes first.
-- **1.0.2** — realtime graphs (load, bandwidth, wireless, connections) are drawn on a dark screen with a visible grid
-  instead of a white box with near-invisible lines; version-free download links; Russian documentation and new screenshots.
-- **1.0.1** — log pages (System Log, Kernel Log, Travelmate) are a dark scrolling screen instead of a text box as tall
-  as the whole log; the striped title bar of modal windows reaches the right edge; packages can be built without the SDK.
 - **1.0.0** — first release.
 
 Details and files for every version are on the [releases page](https://github.com/Trendorin/luci-theme-pixel/releases).
