@@ -5,8 +5,9 @@
 {%
 	const board = ubus.call('system', 'board');
 	const release = board?.release ?? {};
-	const host = striptags(board?.hostname ?? 'OpenWrt');
-	const model = striptags(board?.model ?? '');
+	/* encoded once: the name lands in attributes as well as text */
+	const host = entityencode(striptags(board?.hostname ?? 'OpenWrt'), true);
+	const model = entityencode(striptags(board?.model ?? ''), true);
 -%}
 
 {% include('header', { blank_page: true }) %}
@@ -14,9 +15,9 @@
 <main class="px-login">
 	<div class="px-screen px-login-screen" id="px-login-screen">
 		<i class="px-tw" aria-hidden="true"></i><i class="px-rf" aria-hidden="true"></i><i class="px-scan" aria-hidden="true"></i>
-		<div class="px-login-wm" id="px-login-wm" data-host="{{ entityencode(host, true) }}">{{ host }}</div>
+		<div class="px-login-wm" id="px-login-wm" data-host="{{ host }}">{{ host }}</div>
 		<div class="px-login-rule" aria-hidden="true"></div>
-		<div class="px-login-sub" id="px-login-sub"><b>&gt;</b> {{ striptags(release.distribution ?? 'OpenWrt') }} {{ striptags(release.version ?? '') }}{% if (model): %} · {{ model }}{% endif %}</div>
+		<div class="px-login-sub" id="px-login-sub"><b>&gt;</b> {{ entityencode(striptags(release.distribution ?? 'OpenWrt'), true) }} {{ entityencode(striptags(release.version ?? ''), true) }}{% if (model): %} · {{ model }}{% endif %}</div>
 	</div>
 
 	<form class="px-login-form px-frame" method="post" autocomplete="on">

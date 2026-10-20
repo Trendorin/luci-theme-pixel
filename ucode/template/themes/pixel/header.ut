@@ -6,7 +6,8 @@
 	import { getuid, getspnam } from 'luci.core';
 
 	const boardinfo = ubus.call('system', 'board');
-	const hostname = striptags(boardinfo?.hostname ?? '?');
+	/* encoded once: the name lands in attributes as well as text */
+	const hostname = entityencode(striptags(boardinfo?.hostname ?? '?'), true);
 
 	http.prepare_content('text/html; charset=UTF-8');
 -%}
@@ -46,7 +47,7 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<link rel="manifest" href="{{ media }}/app.webmanifest">
 		<link rel="preload" href="{{ media }}/fonts/pixel-5x7.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="stylesheet" href="{{ media }}/cascade.css?v=1.0.0">
+		<link rel="stylesheet" href="{{ media }}/cascade.css?v=1.0.1">
 		<link rel="icon" href="{{ media }}/logo.svg" type="image/svg+xml" sizes="any">
 		<link rel="icon" href="{{ media }}/icon-192.png" type="image/png" sizes="192x192">
 		<link rel="apple-touch-icon" href="{{ media }}/icon-180.png">
@@ -66,7 +67,7 @@
 			<aside class="px-side" id="px-side">
 				<a class="px-brand" href="{{ dispatcher.build_url() }}" aria-label="{{ hostname }}">
 					<span class="px-wm-slot" id="px-wm">{{ hostname }}</span>
-					<span class="px-brand-sub" id="px-brand-sub"><b>&gt;</b> {{ striptags(boardinfo?.model ?? '') }}</span>
+					<span class="px-brand-sub" id="px-brand-sub"><b>&gt;</b> {{ entityencode(striptags(boardinfo?.model ?? ''), true) }}</span>
 				</a>
 				<nav class="px-nav" id="px-nav" aria-label="Main menu"></nav>
 				<div class="px-side-foot" id="px-side-foot"></div>

@@ -532,6 +532,12 @@ table { border-collapse: collapse; border-spacing: 0; }
 .cbi-section .cbi-section { --pb: var(--card); --f: var(--frame); margin: 6px 0 16px; padding: 18px 20px; background: var(--card-2); }
 .cbi-section .cbi-section .cbi-section { --pb: var(--card-2); background: transparent; box-shadow: none; padding: 0; }
 .cbi-section .cbi-section .cbi-section::before { display: none; }
+/* LuCI 26.288 (OpenWrt 25.12.6) wraps loose view content in .cbi-section: a section that
+   holds nothing but its heading (nftables tables) is a plain heading, not an empty card */
+.cbi-section:has(> h3:only-child), .cbi-section:has(> h4:only-child) { margin: 0 0 12px; padding: 0; background: none; box-shadow: none; }
+.cbi-section:has(> h3:only-child)::before, .cbi-section:has(> h4:only-child)::before { display: none; }
+.cbi-section:has(> h3:only-child) > h3, .cbi-section:has(> h4:only-child) > h4 { margin: 0; }
+.cbi-section .cbi-page-actions { --pb: var(--card); background: var(--card-2); }
 .cbi-section-node { margin: 0; }
 .cbi-section-node-tabbed { padding-top: 0; }
 .cbi-section-descr { margin: -6px 0 18px; color: var(--fg-3); max-width: 88ch; }
@@ -1160,6 +1166,10 @@ body.modal-overlay-active .modal { animation: px-in .2s steps(4, end); }
 	font: 13px/1.65 var(--mono) !important;
 	scrollbar-color: #3a3a3a transparent;
 }
+/* LuCI 26.288 made the log wrapper a .cbi-section; a card around the screen would hide it
+   (the card and the screen share one colour), so the wrapper stays frameless */
+#content_syslog.cbi-section { padding: 0; background: none; box-shadow: none; }
+#content_syslog.cbi-section::before { display: none; }
 
 /* interface & zone badges */
 .ifacebox {

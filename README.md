@@ -119,7 +119,7 @@ line after a `-`, `_` or `.`, and bracketed notes are dropped from the model in 
 
 | OpenWrt | Package | Status |
 |---|---|---|
-| 25.12 | `.apk` | Tested on 25.12.5 (LuCI 26.267), Cudy TR3000: install, upgrade, remove, reinstall |
+| 25.12 | `.apk` | Tested on 25.12.5 (LuCI 26.267), Cudy TR3000: install, upgrade, remove, reinstall. 1.0.1 follows the markup changes of 25.12.6 (LuCI 26.288) |
 | 24.10 | `.ipk` | Built with the 24.10 SDK; same ucode theme API, not yet installed on a 24.10 router |
 | 23.05 | `.ipk` | Same ucode theme API; not yet installed on a 23.05 router |
 
@@ -149,6 +149,11 @@ scripts of the Makefile; the `.apk` needs apk-tools 3, e.g. `dnf install apk-too
 
 ## Changelog
 
+- **1.0.1** — ready for OpenWrt 25.12.6 (LuCI 26.288), which wraps logs, Processes, Startup, firewall tables and the
+  package manager in sections: the System and Kernel Log stay a dark screen instead of vanishing into a card of the same
+  colour, nftables table names are plain headings instead of empty cards, and the Save bar on Startup stands out from its
+  section. The router name and model are HTML-escaped everywhere, so a hostname with quotes can no longer break out of
+  the page markup.
 - **1.0.0** — first release.
 
 Details and files for every version are on the [releases page](https://github.com/Trendorin/luci-theme-pixel/releases).
